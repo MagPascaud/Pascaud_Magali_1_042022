@@ -3,12 +3,12 @@ const {getAllSauces,getOneSauce,createOneSauce,updateOneSauce,deleteOneSauce,lik
 
 const router = Router();
 
-router.get('/getAllSauces', getAllSauces);
-router.get('/getOneSauce', getOneSauce);
-router.post('/createOneSauce', createOneSauce);
-router.put('/updateOneSauce', updateOneSauce);
-router.delete('/deleteOneSauce', deleteOneSauce);
-router.post('/likeOrDislikeOneSauce', likeOrDislikeOneSauce);
+router.get('/', getAllSauces);
+router.get('/:id', getOneSauce);
+router.post('/', createOneSauce);
+router.put('/:id', updateOneSauce);
+router.delete('/:id', deleteOneSauce);
+router.post('/:id/likeOrDislikeOneSauce', likeOrDislikeOneSauce);
 
 
 module.exports = router;
