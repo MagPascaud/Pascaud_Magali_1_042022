@@ -3,12 +3,13 @@ const {getAllSauces,getOneSauce,createOneSauce,updateOneSauce,deleteOneSauce,lik
 
 const router = Router();
 const auth = require('../middlewares/auth');
+const multer = require('../middlewares/multer-config');
 
 
 router.get('/', auth, getAllSauces);
 router.get('/:id', auth, getOneSauce);
-router.post('/', auth, createOneSauce);
-router.put('/:id', auth, updateOneSauce);
+router.post('/', auth, multer, createOneSauce);
+router.put('/:id', auth, multer, updateOneSauce);
 router.delete('/:id', auth, deleteOneSauce);
 router.post('/:id/likeOrDislikeOneSauce', auth, likeOrDislikeOneSauce);
 

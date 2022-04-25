@@ -1,3 +1,7 @@
+const Sauce = require("../models/Sauces");
+
+
+
 exports.getAllSauces = (req, res) => {
     res.status(200).json({ message: 'array de toutes les sauces' });
 };
@@ -7,7 +11,11 @@ exports.getOneSauce = (req, res) => {
 };
 
 exports.createOneSauce = (req, res) => {
-    res.status(200).json({ message: 'nouvelle sauce' });
+    console.log(Sauce);
+    const sauce = new Sauce(req.body);
+    sauce.save()
+        .then(() => res.status(201).json({ message: 'Sauce créée !' }))
+        .catch(error => res.status(400).json({ error }));
 };
 
 exports.updateOneSauce = (req, res) => {
