@@ -11,16 +11,29 @@ exports.getOneSauce = (req, res) => {
 };
 
 exports.createOneSauce = (req, res) => {
-    console.log(Sauce);
-    const sauce = new Sauce(req.body);
+    const sauceObject = JSON.parse(req.body.sauce);
+    delete sauceObject._id;
+    const sauce = new Sauce({
+        ...sauceObject,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    });
     sauce.save()
         .then(() => res.status(201).json({ message: 'Sauce créée !' }))
         .catch(error => res.status(400).json({ error }));
 };
 
+
 exports.updateOneSauce = (req, res) => {
-    res.status(200).json({ message: 'mis à jour de la sauce' });
+    const sauceObject = req.file ?
+        {
+            ...JSON.parse(req.body.sauce),
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        } : { ...req.body };
+    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+        .then(() => res.status(200).json({ message: 'mis à jour de la sauce' }))
+            .catch(error => res.status(400).json({ error }));
 };
+
 
 exports.deleteOneSauce = (req, res) => {
     res.status(200).json({ message: 'suppressions de la sauce' });
