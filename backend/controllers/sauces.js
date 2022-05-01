@@ -3,16 +3,20 @@ const Sauce = require("../models/Sauces");
 
 
 exports.getAllSauces = (req, res) => {
-    res.status(200).json({ message: 'array de toutes les sauces' });
+    Sauce.find()
+    .then(sauces => res.status(200).json(sauces))
+    .catch(error => res.status(400).json({ error}));
 };
 
 exports.getOneSauce = (req, res) => {
-    res.status(200).json({ message: 'sauce et son id' });
+    Sauce.findOne({_id:req.params.id})
+    .then(sauce => res.status(200).json(sauce))
+    .catch(error => res.status(200).json({ error }));
 };
 
 exports.createOneSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    delete sauceObject._id;
+    // delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
