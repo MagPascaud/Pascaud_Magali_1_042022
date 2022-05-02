@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require("../models/Auth");
 const jwt = require('jsonwebtoken');
 
+//Logique métier de la vérification de l'identification de l'utilisateur
 exports.login = (req, res) => {
     User.findOne({ email: req.body.email })
         .then(user => {
@@ -27,6 +28,7 @@ exports.login = (req, res) => {
         .catch(error => res.status(500).json({ error }));
 };
 
+//Logique métier de la création d'un compte utilisateur
 exports.signup = (req, res) => {
     console.log(req.body.password);
     bcrypt.hash(req.body.password, 10)

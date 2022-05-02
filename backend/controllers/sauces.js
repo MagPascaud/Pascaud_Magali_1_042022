@@ -1,24 +1,30 @@
 const Sauce = require("../models/Sauces");
+const fs = require('fs');
 
-
-
+//Logique métier de la diffusion de toutes les sauces
 exports.getAllSauces = (req, res) => {
     Sauce.find()
-    .then(sauces => res.status(200).json(sauces))
-    .catch(error => res.status(400).json({ error}));
+        .then(sauces => res.status(200).json(sauces))
+        .catch(error => res.status(500).json({ error }));
 };
 
+//Logique de récupération d'une seule sauce
 exports.getOneSauce = (req, res) => {
-    Sauce.findOne({_id:req.params.id})
-    .then(sauce => res.status(200).json(sauce))
-    .catch(error => res.status(200).json({ error }));
+    Sauce.findOne({ _id: req.params.id })
+        .then(sauce => {
+            if (!sauce) {
+                return res.status(404).json({ message: "Sauce non trouvée" })
+            }
+            res.status(200).json(sauce);
+        })
+        .catch(error => res.status(500).json({ error }));
 };
 
+//Logique de la créaton d'une sauce
 exports.createOneSauce = (req, res) => {
-    const sauceObject = JSON.parse(req.body.sauce);
-    // delete sauceObject._id;
+    console.log(req.body);
     const sauce = new Sauce({
-        ...sauceObject,
+        ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     sauce.save()
@@ -26,23 +32,57 @@ exports.createOneSauce = (req, res) => {
         .catch(error => res.status(400).json({ error }));
 };
 
-
+//Logique de la mise à jour d'une sauce et/ou de son image
 exports.updateOneSauce = (req, res) => {
     const sauceObject = req.file ?
         {
-            ...JSON.parse(req.body.sauce),
+            ...req.body,
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         } : { ...req.body };
-    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'mis à jour de la sauce' }))
-            .catch(error => res.status(400).json({ error }));
+
+            Sauce.findOne({ _id: req.params.id })
+                .then(sauce => {
+                    if (!sauce) {
+                        return res.status(404).json({ message: "Sauce non trouvée" })
+                    }
+                    const oldImageName = sauce.imageUrl.split('/images/')[1];
+                    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject })
+                        .then(() => {
+                            if (req.file) {
+                                fs.unlink(`images/${oldImageName}`, () => {
+                                    console.log("fichier supprimé");
+                                });
+                            }
+                            res.status(200).json({ message: 'mis à jour de la sauce' })
+                        })
+                        .catch(error => res.status(400).json({ error }));
+                })
+                .catch(error => res.status(500).json({ error }));
+
+
 };
 
-
+//Logique de la suppression d'une sauce et son image
 exports.deleteOneSauce = (req, res) => {
-    res.status(200).json({ message: 'suppressions de la sauce' });
+    Sauce.findOne({ _id: req.params.id })
+        .then(sauce => {
+            if (!sauce) {
+                return res.status(404).json({ message: "Sauce non trouvée" })
+            }
+            const filename = sauce.imageUrl.split('/images/')[1];
+            Sauce.deleteOne({ _id: req.params.id })
+                .then(() => {
+                    fs.unlink(`images/${filename}`, () => {
+                        console.log("fichier supprimé");
+                    });
+                    res.status(200).json({ message: 'Sauce supprimée' })
+                })
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
 };
 
+//Logique de la possibilité à l'utilisateur de liker ou disliker une sauce
 exports.likeOrDislikeOneSauce = (req, res) => {
     res.status(200).json({ message: 'like et dislike sauce' });
 };

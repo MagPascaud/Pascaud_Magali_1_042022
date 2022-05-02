@@ -7,8 +7,10 @@ const path = require('path');
 const app = express();
 app.use(cors());
 
+//Utilisation d'express.json pour analyser le corps des requêtes
 app.use(express.json());
 
+//Import du package Mongoose
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb+srv://MagPascaud:lisse47170@cluster0.ekvgs.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
