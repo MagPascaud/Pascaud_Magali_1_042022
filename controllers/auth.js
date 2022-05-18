@@ -30,7 +30,6 @@ exports.login = (req, res) => {
 
 //Logique métier de la création d'un compte utilisateur
 exports.signup = (req, res) => {
-    console.log(req.body.password);
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({

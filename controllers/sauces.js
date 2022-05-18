@@ -25,7 +25,6 @@ exports.getOneSauce = (req, res) => {
 
 //Logique de la créaton d'une sauce
 exports.createOneSauce = (req, res) => {
-    console.log(req.body);
     const sauce = new Sauce({
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -37,7 +36,6 @@ exports.createOneSauce = (req, res) => {
 
 //Logique de la mise à jour d'une sauce et/ou de son image
 exports.updateOneSauce = (req, res) => {
-    console.log(req.body);
     const sauceObject = req.file ?
         {
 
@@ -87,13 +85,10 @@ exports.deleteOneSauce = (req, res) => {
 
 //Logique de la possibilité à l'utilisateur de liker ou disliker une sauce
 exports.likeOrDislikeOneSauce = (req, res) => {
-    console.log(req.params);
-    console.log(req.body);
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
             //Si like = 1 et userId est false
             if (!sauce.usersLiked.includes(req.body.userId) && req.body.like === 1) {
-                console.log('like');
                 Sauce.updateOne({ _id: req.params.id },
                     {
                         $inc: { likes: 1 },
@@ -109,7 +104,6 @@ exports.likeOrDislikeOneSauce = (req, res) => {
             }
             //Si like = 1 et userId est true : on supprime le like et l'userId
             else if (sauce.usersLiked.includes(req.body.userId) && req.body.like === 0) {
-                console.log('retrait like');
                 Sauce.updateOne({ _id: req.params.id },
                     {
                         $inc: { likes: -1 },
@@ -127,7 +121,6 @@ exports.likeOrDislikeOneSauce = (req, res) => {
             }
             //Si dislike = 1 et userId est false
             else if (!sauce.usersDisliked.includes(req.body.userId) && req.body.like === -1) {
-                console.log('dislike');
                 Sauce.updateOne({ _id: req.params.id },
                     {
                         $inc: { dislikes: 1 },
@@ -143,7 +136,6 @@ exports.likeOrDislikeOneSauce = (req, res) => {
             }
             //Si dislike = 1 et userId est true : on supprime le dislike et l'userId
             else if (sauce.usersDisliked.includes(req.body.userId) && req.body.like === 0) {
-                console.log('retrait dislike');
                 Sauce.updateOne({ _id: req.params.id },
                     {
                         $inc: { dislikes: -1 },
